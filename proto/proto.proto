@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option go_package = "DistributedAuctionSystem/proto/proto";
+
+message TempMessage {
+    int32 tempField = 1;
+}
+
+message Empty {}
+
+service TempService {
+    rpc TempRPC (TempMessage) returns (TempMessage);
+}
+
