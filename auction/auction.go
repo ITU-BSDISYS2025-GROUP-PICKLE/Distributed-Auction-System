@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"sync"
+	"time"
 
 	"google.golang.org/grpc"
 
@@ -40,9 +41,25 @@ func (a *Auction) StartServer() {
 	}
 }
 
+func (a *Auction) StartAuctionTimer() {
+	log.Printf("Auction is live! Accepting bets for the next 2 minutes.")
+
+	time.Sleep(2 * time.Minute)
+
+	a.mu.Lock()
+	a.is_over = true
+	a.mu.Unlock()
+
+	log.Printf("Auction ended. %d placed the highest bid at %d.00 DKK", a.highest_bid.ClientId, a.highest_bid.BidAmount)
+}
+
 func (a *Auction) EvaluateBid(_ context.Context, proposed_bid *pb.Bid) (*pb.Acknowledgement, error) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
+
+	if a.is_over {
+		return &pb.Acknowledgement{Type: pb.Acknowledgement_EXCEPTION}, nil
+	}
 
 	if proposed_bid.BidAmount > a.highest_bid.BidAmount {
 		a.highest_bid = proposed_bid
@@ -73,11 +90,18 @@ func (a *Auction) EvaluateResult(_ context.Context, _ *pb.Empty) (*pb.Outcome, e
 	}, nil
 }
 
-func Main() {
+func main() {
 	auction := &Auction{
 		address:     "localhost:50051",
 		highest_bid: &pb.Bid{BidAmount: 0},
+		is_over:     false,
 	}
 
-	auction.StartServer()
+	go auction.StartServer()
+
+	time.Sleep(5 * time.Second) // Ensure auction-server is listening before starting auction timer
+
+	auction.StartAuctionTimer()
+
+	select {} // Auction-program runs until closed manually
 }
