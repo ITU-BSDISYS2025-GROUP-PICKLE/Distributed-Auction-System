@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net"
 	"sync"
@@ -38,10 +39,20 @@ func (a *Auction) StartServer() {
 	}
 }
 
-func main() {
-	auction := Auction{
-		address:     "localhost:8080",
-		highest_bid: pb.Bid{ClientId: -1, BidAmount: 0},
+func (a *Auction) EvaluateBid(ctx context.Context, proposed_bid *pb.Bid) (*pb.Acknowledgement, error) {
+	// needs implementation
+	return nil, nil
+}
+
+func (a *Auction) EvaluateResult(context.Context, *pb.Empty) (*pb.Outcome, error) {
+	// needs implementation
+	return nil, nil
+}
+
+func Main() {
+	auction := &Auction{
+		address:     "localhost:50051",
+		highest_bid: pb.Bid{BidAmount: 0},
 	}
 
 	auction.StartServer()
