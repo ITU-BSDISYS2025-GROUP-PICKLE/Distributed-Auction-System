@@ -5,15 +5,15 @@ You must implement a **distributed auction system** using replication: a distrib
 ## API
 Your system must be implemented as some number of nodes, running on distinct processes (no threads). Clients direct API requests to any node they happen to know (it is up to you to decide how many nodes can be known). Nodes must respond to the following API
 
-Method:  bid
-Inputs:  amount (an int)
-Outputs: ack
-Comment: given a bid, returns an outcome among {fail, success or exception}
+- Method:  bid
+    - Inputs:  amount (an int)
+    - Outputs: ack
+    - Comment: given a bid, returns an outcome among {fail, success or exception}
 
-Method:  result
-Inputs:  void
-Outputs: outcome
-Comment:  if the auction is over, it returns the result, else highest bid.
+- Method:  result
+    - Inputs:  void
+    - Outputs: outcome
+    - Comment:  if the auction is over, it returns the result, else highest bid.
 
 
 ## Semantics
