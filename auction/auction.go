@@ -16,7 +16,8 @@ type Auction struct {
 
 	mu          sync.Mutex
 	address     string
-	highest_bid pb.Bid
+	highest_bid *pb.Bid
+	is_over     bool
 }
 
 func (a *Auction) StartServer() {
@@ -39,20 +40,43 @@ func (a *Auction) StartServer() {
 	}
 }
 
-func (a *Auction) EvaluateBid(ctx context.Context, proposed_bid *pb.Bid) (*pb.Acknowledgement, error) {
-	// needs implementation
-	return nil, nil
+func (a *Auction) EvaluateBid(_ context.Context, proposed_bid *pb.Bid) (*pb.Acknowledgement, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	if proposed_bid.BidAmount > a.highest_bid.BidAmount {
+		a.highest_bid = proposed_bid
+		return &pb.Acknowledgement{Type: pb.Acknowledgement_SUCCESS}, nil
+	}
+
+	return &pb.Acknowledgement{Type: pb.Acknowledgement_FAIL}, nil
 }
 
-func (a *Auction) EvaluateResult(context.Context, *pb.Empty) (*pb.Outcome, error) {
-	// needs implementation
-	return nil, nil
+func (a *Auction) EvaluateResult(_ context.Context, _ *pb.Empty) (*pb.Outcome, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	if a.is_over {
+		return &pb.Outcome{
+			OutcomeType: &pb.Outcome_Result{
+				Result: &pb.Result{
+					Id:         a.highest_bid.ClientId,
+					HighestBid: a.highest_bid.BidAmount},
+			},
+		}, nil
+	}
+
+	return &pb.Outcome{
+		OutcomeType: &pb.Outcome_HighestBid{
+			HighestBid: a.highest_bid.BidAmount,
+		},
+	}, nil
 }
 
 func Main() {
 	auction := &Auction{
 		address:     "localhost:50051",
-		highest_bid: pb.Bid{BidAmount: 0},
+		highest_bid: &pb.Bid{BidAmount: 0},
 	}
 
 	auction.StartServer()
