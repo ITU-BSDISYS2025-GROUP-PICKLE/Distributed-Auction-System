@@ -28,7 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
 // Auction-node service. Clients may RPC-call bidding (TryBid),
-// as well as view the state of the auction (TryResult)
+// as well as query the state of the auction (TryResult)
 type AuctionNodeClient interface {
 	TryBid(ctx context.Context, in *Bid, opts ...grpc.CallOption) (*Acknowledgement, error)
 	TryResult(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Outcome, error)
@@ -67,7 +67,7 @@ func (c *auctionNodeClient) TryResult(ctx context.Context, in *Empty, opts ...gr
 // for forward compatibility.
 //
 // Auction-node service. Clients may RPC-call bidding (TryBid),
-// as well as view the state of the auction (TryResult)
+// as well as query the state of the auction (TryResult)
 type AuctionNodeServer interface {
 	TryBid(context.Context, *Bid) (*Acknowledgement, error)
 	TryResult(context.Context, *Empty) (*Outcome, error)

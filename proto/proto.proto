@@ -9,7 +9,7 @@ message Bid {
 }
 
 // Acknowledgement returned to a bidder: either the bid succeeds or fails.
-// In rare instances the acknowledgement may also return an "Exception"
+// If the auction is over, the acknowledgement type is "Exception"
 message Acknowledgement {
     enum AckType {
         EXCEPTION = 0;

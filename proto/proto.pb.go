@@ -124,7 +124,7 @@ func (x *Bid) GetBidAmount() int32 {
 }
 
 // Acknowledgement returned to a bidder: either the bid succeeds or fails.
-// In rare instances the acknowledgement may also return an "Exception"
+// If the auction is over, the acknowledgement type is "Exception"
 type Acknowledgement struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	AckType       Acknowledgement_AckType `protobuf:"varint,1,opt,name=ackType,proto3,enum=Acknowledgement_AckType" json:"ackType,omitempty"`
@@ -172,7 +172,7 @@ func (x *Acknowledgement) GetAckType() Acknowledgement_AckType {
 // The result of an auction: only to be returned once the auction has finished
 type Result struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ClientId        int32                  `protobuf:"varint,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	HighestBidderId int32                  `protobuf:"varint,1,opt,name=highest_bidder_id,json=highestBidderId,proto3" json:"highest_bidder_id,omitempty"`
 	HighestBidFinal int32                  `protobuf:"varint,2,opt,name=highest_bid_final,json=highestBidFinal,proto3" json:"highest_bid_final,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
@@ -208,9 +208,9 @@ func (*Result) Descriptor() ([]byte, []int) {
 	return file_proto_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *Result) GetClientId() int32 {
+func (x *Result) GetHighestBidderId() int32 {
 	if x != nil {
-		return x.ClientId
+		return x.HighestBidderId
 	}
 	return 0
 }
@@ -357,9 +357,9 @@ const file_proto_proto_rawDesc = "" +
 	"\aAckType\x12\r\n" +
 	"\tEXCEPTION\x10\x00\x12\b\n" +
 	"\x04FAIL\x10\x01\x12\v\n" +
-	"\aSUCCESS\x10\x02\"Q\n" +
-	"\x06Result\x12\x1b\n" +
-	"\tclient_id\x18\x01 \x01(\x05R\bclientId\x12*\n" +
+	"\aSUCCESS\x10\x02\"`\n" +
+	"\x06Result\x12*\n" +
+	"\x11highest_bidder_id\x18\x01 \x01(\x05R\x0fhighestBidderId\x12*\n" +
 	"\x11highest_bid_final\x18\x02 \x01(\x05R\x0fhighestBidFinal\"j\n" +
 	"\aOutcome\x12-\n" +
 	"\x12highest_bid_so_far\x18\x01 \x01(\x05H\x00R\x0fhighestBidSoFar\x12!\n" +
