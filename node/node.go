@@ -46,7 +46,8 @@ func (n *AuctionNode) StartServer() {
 	// Log for transparency
 	log.Printf("AuctionNode server now listening on %s", n.addr)
 
-	// TODO: Auction timer logic might be started here
+	// Start auction
+	n.RunAuction()
 
 	// Serve
 	if err := server.Serve(lis); err != nil {
@@ -144,14 +145,5 @@ func main() {
 	}
 
 	// Start server
-	go n.StartServer()
-
-	// Ensure server is listening before starting the auction
-	time.Sleep(5 * time.Second)
-
-	// Start auction
-	n.RunAuction()
-
-	// AuctionNode stays alive until RunAuction finishes
-	select {}
+	n.StartServer()
 }
