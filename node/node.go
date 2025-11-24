@@ -6,6 +6,7 @@ import (
 	"net"
 	"os"
 	"sync"
+	"time"
 
 	pb "module/proto"
 
@@ -51,6 +52,27 @@ func (n *AuctionNode) StartServer() {
 	if err := server.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}
+}
+
+// Start an auction. Runs for one minute then ends and announces the winner.
+func (n *AuctionNode) RunAuction() {
+	n.mu.Lock()
+	n.is_auction_live = true
+	log.Printf("Auction is live! Accepting bets for the next minute.")
+	n.mu.Unlock()
+
+	time.Sleep(1 * time.Minute)
+
+	n.mu.Lock()
+	n.is_auction_live = false
+	if n.highest_bidder_id == -1 {
+		log.Println("Auction ended. No one placed any bids.")
+	} else {
+		log.Printf("Auction ended. %d placed the highest bid at %d.00 DKK.", n.highest_bidder_id, n.highest_bid_amount)
+	}
+	n.mu.Unlock()
+
+	os.Exit(0)
 }
 
 // RPC function
@@ -109,8 +131,10 @@ func main() {
 		return
 	}
 
+	// Parse port-argument
 	port := os.Args[1]
 
+	// Create AuctionNode
 	n := &AuctionNode{
 		addr: "localhost:" + port,
 
@@ -119,5 +143,15 @@ func main() {
 		highest_bidder_id:  -1,
 	}
 
-	n.StartServer()
+	// Start server
+	go n.StartServer()
+
+	// Ensure server is listening before starting the auction
+	time.Sleep(5 * time.Second)
+
+	// Start auction
+	n.RunAuction()
+
+	// AuctionNode stays alive until RunAuction finishes
+	select {}
 }
