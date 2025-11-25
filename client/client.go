@@ -19,6 +19,7 @@ import (
 var (
 	client_id  = -1
 	node_ports = []string{}
+	last_bid   = -1
 )
 
 // Print client usage instructions to the terminal
@@ -94,6 +95,15 @@ func PlaceBid(message string) {
 		return
 	}
 
+	// Ensure bid is larger than the last
+	if amount <= last_bid {
+		println("Bid must be larger than last bid.")
+		return
+	}
+
+	// Update last bid
+	last_bid = amount
+
 	// Log for transparency
 	log.Printf("Placing bid of %d DKK...", amount)
 
@@ -133,6 +143,7 @@ func PlaceBid(message string) {
 			log.Fatalln("This should never happen")
 		}
 	}
+
 }
 
 // Attempt querying the state of the auction from one of the active nodes
