@@ -6,7 +6,7 @@
 5. In the client-terminal(s), write "go run client.go <client_id\> <port_number_1\> <port_number_2\>", swapping <client_id\> for any number of your choosing, and <port_number_1\> and <port_number_2\> for the port numbers you input in the node-terminals.
 6. If the auctions haven't announced themselves starting, wait for them to do so.
 7. Finally, the client(s) provide(s) instructions on how to bid and query the auction. Enjoy!
-8. Observe that active (AKA leader-less) replication works as intended by shutting down a node with Ctrl+C while continuing to bid and query the auction on the client(s).
+8. Observe that active (AKA leaderless) replication works as intended by shutting down a node with Ctrl+C while continuing to bid and query the auction on the client(s).
 
 
 ## Introduction
