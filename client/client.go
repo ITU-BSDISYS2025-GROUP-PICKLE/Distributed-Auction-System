@@ -4,16 +4,17 @@ import (
 	"bufio"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 )
 
-// Read user input
-func ReadInput(scanner *bufio.Scanner) string {
-	scanner.Scan()
-	return scanner.Text()
-}
+// Universal/shared variables
+var (
+	nodes = []string{}
+)
 
-// Print usage. QoL feature
+// Print client usage instructions to the terminal
 func PrintUsage() {
 	println()
 	println("Usage:")
@@ -22,6 +23,27 @@ func PrintUsage() {
 	println("  usage          -- See this page")
 	println("  exit           -- Stop the client")
 	println()
+}
+
+func Bid(message string) {
+	bidSplit := strings.Split(message, " ")
+	if len(bidSplit) == 1 {
+		println("Usage: bid <amount>")
+		return
+	}
+
+	amountInt, err := strconv.Atoi(bidSplit[1])
+	if err != nil {
+		println("Usage: bid <amount>")
+		return
+	}
+
+	log.Printf("Placing bid of %d DKK...", amountInt)
+}
+
+func Result() {
+	// TODO: Implement
+	log.Println("GETTING RESULT...")
 }
 
 func main() {
@@ -33,10 +55,7 @@ func main() {
 	}
 
 	// Parse node argument(s)
-	nodes := os.Args[1:]
-	for _, node := range nodes { //TODO: Debug
-		log.Println(node)
-	}
+	nodes = os.Args[1:]
 
 	// Print usage
 	PrintUsage()
@@ -44,21 +63,22 @@ func main() {
 	// Continuously read user input
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
-		message := ReadInput(scanner)
-		time.Sleep(100 * time.Millisecond)
-		// ^^Fixes an annoying behaviour where the client terminal prints
-		// 5x "Did not understand: to see usage run 'usage'" when Ctrl+C is used to stop the client
+		// Read user input
+		scanner.Scan()
+		message := scanner.Text()
 
-		switch message {
-		case "bid":
-			println("BID\n")
-		case "result":
-			println("RESULT\n")
-		case "usage":
+		time.Sleep(100 * time.Millisecond)
+		// ^^Fixes a visual bug when Ctrl+C'ing to stop the client
+
+		if strings.HasPrefix(message, "bid") {
+			Bid(message)
+		} else if message == "result" {
+			Result()
+		} else if message == "usage" {
 			PrintUsage()
-		case "exit":
+		} else if message == "exit" {
 			os.Exit(0)
-		default:
+		} else {
 			println("Did not understand: to see usage run 'usage'")
 		}
 	}
