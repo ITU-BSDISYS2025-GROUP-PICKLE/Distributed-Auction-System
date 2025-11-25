@@ -53,22 +53,31 @@ func (n *AuctionNode) StartServer() {
 
 // Start an auction. Runs for one minute, ends and announces the winner, waits for one more minute, then stops the server
 func (n *AuctionNode) RunAuction() {
+	// Cheesy way of synchronising auction-start across nodes: wait until the same second
+	for time.Now().Second() != 0 {
+		time.Sleep(time.Second)
+	}
+
+	// Flip boolean to true, log
 	n.mu.Lock()
 	n.is_auction_live = true
 	log.Printf("Auction is live! Accepting bets for the next minute.")
 	n.mu.Unlock()
 
+	// Wait: receive bids and queries in this time
 	time.Sleep(1 * time.Minute)
 
+	// Flip boolean back to false, log
 	n.mu.Lock()
 	n.is_auction_live = false
 	if n.highest_bidder_id == -1 {
-		log.Println("Auction ended. No one placed any bids.")
+		log.Println("Auction ended. No bids were placed.")
 	} else {
 		log.Printf("Auction ended. %d placed the highest bid at %d.00 DKK.", n.highest_bidder_id, n.highest_bid_amount)
 	}
 	n.mu.Unlock()
 
+	// Wait again, then shut down the server
 	time.Sleep(1 * time.Minute)
 	log.Println("Server shutting down...")
 	os.Exit(0)
