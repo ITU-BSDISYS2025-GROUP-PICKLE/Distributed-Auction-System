@@ -35,12 +35,14 @@ message Outcome {
     }
 }
 
-// Empty message is empty...
-message Empty {}
+// A Result request: contains the requesting client's ID so it may be logged
+message ResultRequest {
+    int32 requesting_client_id = 1;
+}
 
 // Auction-node service. Clients may RPC-call bidding (TryBid),
 // as well as query the state of the auction (TryResult)
 service AuctionNode {
     rpc TryBid(Bid) returns (Acknowledgement);
-    rpc TryResult(Empty) returns (Outcome);
+    rpc TryResult(ResultRequest) returns (Outcome);
 }

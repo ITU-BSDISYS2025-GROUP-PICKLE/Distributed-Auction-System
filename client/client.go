@@ -78,8 +78,7 @@ func RemovePortFromSlice(port string) []string {
 	return node_ports
 }
 
-// Attempt placing a bid on all active nodes. If a node is down, its port is
-// removed from the node-port slice and consequently won't be dialed again
+// Attempt placing a bid on all active nodes. If a node is down, its port is removed from the node-port slice and consequently won't be dialed again
 func PlaceBid(message string) {
 	// Split the bid message
 	bidSplit := strings.Split(message, " ")
@@ -148,7 +147,12 @@ func QueryResult() {
 		medium, conn := DialNode("localhost:" + node_port)
 		defer conn.Close()
 
-		outcome, err := medium.TryResult(context.Background(), &pb.Empty{})
+		// Create a ResultRequest
+		result_request := &pb.ResultRequest{
+			RequestingClientId: int32(client_id),
+		}
+
+		outcome, err := medium.TryResult(context.Background(), result_request)
 		if err != nil {
 			// If an error is encountered, the node-port is removed from the node-ports slice so it's never called again
 			node_ports = RemovePortFromSlice(node_port)

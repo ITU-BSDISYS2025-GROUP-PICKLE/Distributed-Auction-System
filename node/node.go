@@ -21,11 +21,6 @@ type AuctionNode struct {
 	mu   sync.Mutex
 	addr string
 
-	// Replication-related fields %% THESE SHOULD BE IN THE CLIENT
-	// peerAddresses []string // Here it's important that a node is removed from the slice if it crashes
-	// numExpectedReplies int32 %% Equal to the length of peer-slice
-	// numReceivedReplies int32
-
 	// Auction-related fields
 	is_auction_live    bool
 	highest_bid_amount int32
@@ -108,12 +103,15 @@ func (n *AuctionNode) TryBid(_ context.Context, proposed_bid *pb.Bid) (*pb.Ackno
 }
 
 // RPC function
-func (n *AuctionNode) TryResult(_ context.Context, _ *pb.Empty) (*pb.Outcome, error) {
+func (n *AuctionNode) TryResult(_ context.Context, result_request *pb.ResultRequest) (*pb.Outcome, error) {
 	n.mu.Lock()
 	defer n.mu.Unlock()
 
+	announcement := fmt.Sprintf("Client #%d is querying the state of the auction", result_request.RequestingClientId)
+
 	// If the auction isn't alive, return a 'Result'-outcome including the highest bidder and bid
 	if !n.is_auction_live {
+		log.Printf("%s: Returning the result", announcement)
 		return &pb.Outcome{
 			OutcomeType: &pb.Outcome_Result{
 				Result: &pb.Result{
@@ -125,6 +123,7 @@ func (n *AuctionNode) TryResult(_ context.Context, _ *pb.Empty) (*pb.Outcome, er
 	}
 
 	// If the auction is alive, return a 'Highest-bid-so-far'-outcome
+	log.Printf("%s: Returning the highest bid so far", announcement)
 	return &pb.Outcome{
 		OutcomeType: &pb.Outcome_HighestBidSoFar{
 			HighestBidSoFar: n.highest_bid_amount,

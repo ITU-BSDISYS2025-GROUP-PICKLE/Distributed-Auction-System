@@ -306,27 +306,28 @@ func (*Outcome_HighestBidSoFar) isOutcome_OutcomeType() {}
 
 func (*Outcome_Result) isOutcome_OutcomeType() {}
 
-// Empty message is empty...
-type Empty struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+// A Result request: contains the requesting client's ID so it may be logged
+type ResultRequest struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	RequestingClientId int32                  `protobuf:"varint,1,opt,name=requesting_client_id,json=requestingClientId,proto3" json:"requesting_client_id,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
-func (x *Empty) Reset() {
-	*x = Empty{}
+func (x *ResultRequest) Reset() {
+	*x = ResultRequest{}
 	mi := &file_proto_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *Empty) String() string {
+func (x *ResultRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Empty) ProtoMessage() {}
+func (*ResultRequest) ProtoMessage() {}
 
-func (x *Empty) ProtoReflect() protoreflect.Message {
+func (x *ResultRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -338,9 +339,16 @@ func (x *Empty) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Empty.ProtoReflect.Descriptor instead.
-func (*Empty) Descriptor() ([]byte, []int) {
+// Deprecated: Use ResultRequest.ProtoReflect.Descriptor instead.
+func (*ResultRequest) Descriptor() ([]byte, []int) {
 	return file_proto_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ResultRequest) GetRequestingClientId() int32 {
+	if x != nil {
+		return x.RequestingClientId
+	}
+	return 0
 }
 
 var File_proto_proto protoreflect.FileDescriptor
@@ -364,11 +372,12 @@ const file_proto_proto_rawDesc = "" +
 	"\aOutcome\x12-\n" +
 	"\x12highest_bid_so_far\x18\x01 \x01(\x05H\x00R\x0fhighestBidSoFar\x12!\n" +
 	"\x06result\x18\x02 \x01(\v2\a.ResultH\x00R\x06resultB\r\n" +
-	"\vOutcomeType\"\a\n" +
-	"\x05Empty2N\n" +
+	"\vOutcomeType\"A\n" +
+	"\rResultRequest\x120\n" +
+	"\x14requesting_client_id\x18\x01 \x01(\x05R\x12requestingClientId2V\n" +
 	"\vAuctionNode\x12 \n" +
-	"\x06TryBid\x12\x04.Bid\x1a\x10.Acknowledgement\x12\x1d\n" +
-	"\tTryResult\x12\x06.Empty\x1a\b.OutcomeB\"Z Distributed-Auction-System/protob\x06proto3"
+	"\x06TryBid\x12\x04.Bid\x1a\x10.Acknowledgement\x12%\n" +
+	"\tTryResult\x12\x0e.ResultRequest\x1a\b.OutcomeB\"Z Distributed-Auction-System/protob\x06proto3"
 
 var (
 	file_proto_proto_rawDescOnce sync.Once
@@ -390,13 +399,13 @@ var file_proto_proto_goTypes = []any{
 	(*Acknowledgement)(nil),      // 2: Acknowledgement
 	(*Result)(nil),               // 3: Result
 	(*Outcome)(nil),              // 4: Outcome
-	(*Empty)(nil),                // 5: Empty
+	(*ResultRequest)(nil),        // 5: ResultRequest
 }
 var file_proto_proto_depIdxs = []int32{
 	0, // 0: Acknowledgement.ackType:type_name -> Acknowledgement.AckType
 	3, // 1: Outcome.result:type_name -> Result
 	1, // 2: AuctionNode.TryBid:input_type -> Bid
-	5, // 3: AuctionNode.TryResult:input_type -> Empty
+	5, // 3: AuctionNode.TryResult:input_type -> ResultRequest
 	2, // 4: AuctionNode.TryBid:output_type -> Acknowledgement
 	4, // 5: AuctionNode.TryResult:output_type -> Outcome
 	4, // [4:6] is the sub-list for method output_type

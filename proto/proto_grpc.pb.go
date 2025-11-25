@@ -31,7 +31,7 @@ const (
 // as well as query the state of the auction (TryResult)
 type AuctionNodeClient interface {
 	TryBid(ctx context.Context, in *Bid, opts ...grpc.CallOption) (*Acknowledgement, error)
-	TryResult(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Outcome, error)
+	TryResult(ctx context.Context, in *ResultRequest, opts ...grpc.CallOption) (*Outcome, error)
 }
 
 type auctionNodeClient struct {
@@ -52,7 +52,7 @@ func (c *auctionNodeClient) TryBid(ctx context.Context, in *Bid, opts ...grpc.Ca
 	return out, nil
 }
 
-func (c *auctionNodeClient) TryResult(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Outcome, error) {
+func (c *auctionNodeClient) TryResult(ctx context.Context, in *ResultRequest, opts ...grpc.CallOption) (*Outcome, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Outcome)
 	err := c.cc.Invoke(ctx, AuctionNode_TryResult_FullMethodName, in, out, cOpts...)
@@ -70,7 +70,7 @@ func (c *auctionNodeClient) TryResult(ctx context.Context, in *Empty, opts ...gr
 // as well as query the state of the auction (TryResult)
 type AuctionNodeServer interface {
 	TryBid(context.Context, *Bid) (*Acknowledgement, error)
-	TryResult(context.Context, *Empty) (*Outcome, error)
+	TryResult(context.Context, *ResultRequest) (*Outcome, error)
 	mustEmbedUnimplementedAuctionNodeServer()
 }
 
@@ -84,7 +84,7 @@ type UnimplementedAuctionNodeServer struct{}
 func (UnimplementedAuctionNodeServer) TryBid(context.Context, *Bid) (*Acknowledgement, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TryBid not implemented")
 }
-func (UnimplementedAuctionNodeServer) TryResult(context.Context, *Empty) (*Outcome, error) {
+func (UnimplementedAuctionNodeServer) TryResult(context.Context, *ResultRequest) (*Outcome, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TryResult not implemented")
 }
 func (UnimplementedAuctionNodeServer) mustEmbedUnimplementedAuctionNodeServer() {}
@@ -127,7 +127,7 @@ func _AuctionNode_TryBid_Handler(srv interface{}, ctx context.Context, dec func(
 }
 
 func _AuctionNode_TryResult_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
+	in := new(ResultRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -139,7 +139,7 @@ func _AuctionNode_TryResult_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: AuctionNode_TryResult_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuctionNodeServer).TryResult(ctx, req.(*Empty))
+		return srv.(AuctionNodeServer).TryResult(ctx, req.(*ResultRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
