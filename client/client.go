@@ -52,7 +52,7 @@ func ReadAndParseInput(scanner *bufio.Scanner) {
 	} else if message == "exit" {
 		os.Exit(0)
 	} else {
-		println("Did not understand to see usage run 'usage'")
+		println("Did not understand: to see usage run 'usage'")
 	}
 }
 
@@ -167,7 +167,12 @@ func QueryResult() {
 			log.Printf("localhost:%s --> Highest current bid: %d DKK", node_port, outcome.GetHighestBidSoFar())
 		} else {
 			result := outcome.GetResult()
-			log.Printf("localhost:%s --> Client #%d won the auction with a bid of %d DKK", node_port, result.HighestBidderId, result.HighestBidFinal)
+
+			if result.HighestBidderId == -1 {
+				log.Printf("localhost:%s --> Auction has concluded: no bets were placed", node_port)
+			} else {
+				log.Printf("localhost:%s --> Client #%d won the auction with a bid of %d DKK", node_port, result.HighestBidderId, result.HighestBidFinal)
+			}
 		}
 	}
 }
