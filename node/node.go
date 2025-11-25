@@ -47,7 +47,7 @@ func (n *AuctionNode) StartServer() {
 	log.Printf("AuctionNode server now listening on %s", n.addr)
 
 	// Start auction
-	n.RunAuction()
+	go n.RunAuction()
 
 	// Serve
 	if err := server.Serve(lis); err != nil {
@@ -55,7 +55,7 @@ func (n *AuctionNode) StartServer() {
 	}
 }
 
-// Start an auction. Runs for one minute then ends and announces the winner.
+// Start an auction. Runs for one minute, ends and announces the winner, waits for one more minute, then stops the server
 func (n *AuctionNode) RunAuction() {
 	n.mu.Lock()
 	n.is_auction_live = true
@@ -73,6 +73,8 @@ func (n *AuctionNode) RunAuction() {
 	}
 	n.mu.Unlock()
 
+	time.Sleep(1 * time.Minute)
+	log.Println("Server shutting down...")
 	os.Exit(0)
 }
 
