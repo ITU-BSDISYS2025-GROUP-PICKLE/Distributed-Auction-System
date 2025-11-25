@@ -6,6 +6,8 @@ import (
 	"log"
 	"net"
 	"os"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -55,8 +57,13 @@ func (n *AuctionNode) StartServer() {
 // Start an auction. Runs for one minute, ends and announces the winner, waits for one more minute, then stops the server
 func (n *AuctionNode) RunAuction() {
 	// Cheesy way of synchronising auction-start across nodes: wait until the same second
-	log.Println("Auction starting within the minute...")
-	for time.Now().Second() != 0 {
+	log.Println("Auction starting soon...")
+	for {
+		second := time.Now().Second()
+		sec_str := strconv.Itoa(second)
+		if strings.HasSuffix(sec_str, "0") {
+			break
+		}
 		time.Sleep(time.Second)
 	}
 
