@@ -1,5 +1,13 @@
 ## How to run
-%% WORK IN PROGRESS %%
+1. Open three or more different terminals
+2. In two terminals cd to the node-directory
+3. In the remaining terminal(s), cd to the client-directory
+4. In the node-terminals, write "go run node.go <port_number\>", swapping <port_number\> for 50051 and 50052 (or any other port numbers of your choosing)
+5. In the client-terminal(s), write "go run client.go <client_id\> <port_number_1\> <port_number_2\>", swapping <client_id\> for any number of your choosing, and <port_number_1\> and <port_number_2\> for the port numbers you input in the node-terminals.
+6. If the auctions haven't announced themselves starting, wait for them to do so.
+7. Finally, the client(s) provide(s) instructions on how to bid and query the auction. Enjoy!
+8. Observe that active (AKA leader-less) replication works as intended by shutting down a node with Ctrl+C while continuing to bid and query the auction on the client(s).
+
 
 ## Introduction
 You must implement a **distributed auction system** using replication: a distributed component which handles auctions, and provides operations for bidding and querying the state of an auction. The component must faithfully implement the semantics of the system described below, and must at least be resilient to one (1) crash failure.
