@@ -11,7 +11,7 @@ import (
 
 // Universal/shared variables
 var (
-	nodes = []string{}
+	node_ports = []string{}
 )
 
 // Print client usage instructions to the terminal
@@ -25,7 +25,31 @@ func PrintUsage() {
 	println()
 }
 
-func Bid(message string) {
+// Reads and parses user input to the terminal, given a scanner. Includes 'bid', 'result', 'usage' and 'exit' commands
+func ReadAndParseInput(scanner *bufio.Scanner) {
+	// Read user input
+	scanner.Scan()
+	message := scanner.Text()
+
+	time.Sleep(100 * time.Millisecond) // Fixes a visual bug when Ctrl+C'ing to stop the client
+
+	// Parse input
+	if message == "bid" {
+		println("Usage bid amount")
+	} else if strings.HasPrefix(message, "bid ") {
+		PlaceBid(message)
+	} else if message == "result" {
+		QueryResult()
+	} else if message == "usage" {
+		PrintUsage()
+	} else if message == "exit" {
+		os.Exit(0)
+	} else {
+		println("Did not understand to see usage run 'usage'")
+	}
+}
+
+func PlaceBid(message string) {
 	bidSplit := strings.Split(message, " ")
 	if len(bidSplit) == 1 {
 		println("Usage: bid <amount>")
@@ -41,21 +65,21 @@ func Bid(message string) {
 	log.Printf("Placing bid of %d DKK...", amountInt)
 }
 
-func Result() {
+func QueryResult() {
 	// TODO: Implement
 	log.Println("GETTING RESULT...")
 }
 
 func main() {
 	if len(os.Args) < 2 {
-		// Even though we're really only looking for 1 (or more) arguments, we expect >= 2 because
-		// the first (0th) argument always directs to the .exe of the .go file that's run
-		println("Usage: go run client.go <node_1> [<node_2> ...]")
+		// Even though we're really only looking for 1 (or more) arguments, we expect at least 2
+		// because the first (0th) argument always directs to the .exe of the .go file that's run
+		println("Usage: go run client.go <node_port_1> [<node_port_2> ...]")
 		return
 	}
 
-	// Parse node argument(s)
-	nodes = os.Args[1:]
+	// Parse node-port argument(s)
+	node_ports = os.Args[1:]
 
 	// Print usage
 	PrintUsage()
@@ -63,23 +87,6 @@ func main() {
 	// Continuously read user input
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
-		// Read user input
-		scanner.Scan()
-		message := scanner.Text()
-
-		time.Sleep(100 * time.Millisecond)
-		// ^^Fixes a visual bug when Ctrl+C'ing to stop the client
-
-		if strings.HasPrefix(message, "bid") {
-			Bid(message)
-		} else if message == "result" {
-			Result()
-		} else if message == "usage" {
-			PrintUsage()
-		} else if message == "exit" {
-			os.Exit(0)
-		} else {
-			println("Did not understand: to see usage run 'usage'")
-		}
+		ReadAndParseInput(scanner)
 	}
 }
