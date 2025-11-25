@@ -98,7 +98,7 @@ func PlaceBid(message string) {
 	log.Printf("Placing bid of %d DKK...", amount)
 
 	// Create bid object
-	bid := &pb.Bid{
+	bid := &pb.ProposedBid{
 		BiddingClientId: int32(client_id),
 		BidAmount:       int32(amount),
 	}
@@ -111,7 +111,7 @@ func PlaceBid(message string) {
 		defer conn.Close()
 
 		// Attempt to place the bid
-		ack, err := medium.TryBid(context.Background(), bid)
+		ack, err := medium.Bid(context.Background(), bid)
 		if err != nil {
 			// If an error is encountered, the node-port is removed from the node-ports slice so it's never called again
 			node_ports = RemovePortFromSlice(node_port)
@@ -152,7 +152,7 @@ func QueryResult() {
 			RequestingClientId: int32(client_id),
 		}
 
-		outcome, err := medium.TryResult(context.Background(), result_request)
+		outcome, err := medium.Result(context.Background(), result_request)
 		if err != nil {
 			// If an error is encountered, the node-port is removed from the node-ports slice so it's never called again
 			node_ports = RemovePortFromSlice(node_port)

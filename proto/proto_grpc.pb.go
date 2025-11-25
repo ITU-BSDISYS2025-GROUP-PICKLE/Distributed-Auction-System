@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuctionNode_TryBid_FullMethodName    = "/AuctionNode/TryBid"
-	AuctionNode_TryResult_FullMethodName = "/AuctionNode/TryResult"
+	AuctionNode_Bid_FullMethodName    = "/AuctionNode/Bid"
+	AuctionNode_Result_FullMethodName = "/AuctionNode/Result"
 )
 
 // AuctionNodeClient is the client API for AuctionNode service.
@@ -30,8 +30,8 @@ const (
 // Auction-node service. Clients may RPC-call bidding (TryBid),
 // as well as query the state of the auction (TryResult)
 type AuctionNodeClient interface {
-	TryBid(ctx context.Context, in *Bid, opts ...grpc.CallOption) (*Acknowledgement, error)
-	TryResult(ctx context.Context, in *ResultRequest, opts ...grpc.CallOption) (*Outcome, error)
+	Bid(ctx context.Context, in *ProposedBid, opts ...grpc.CallOption) (*Acknowledgement, error)
+	Result(ctx context.Context, in *ResultRequest, opts ...grpc.CallOption) (*Outcome, error)
 }
 
 type auctionNodeClient struct {
@@ -42,20 +42,20 @@ func NewAuctionNodeClient(cc grpc.ClientConnInterface) AuctionNodeClient {
 	return &auctionNodeClient{cc}
 }
 
-func (c *auctionNodeClient) TryBid(ctx context.Context, in *Bid, opts ...grpc.CallOption) (*Acknowledgement, error) {
+func (c *auctionNodeClient) Bid(ctx context.Context, in *ProposedBid, opts ...grpc.CallOption) (*Acknowledgement, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Acknowledgement)
-	err := c.cc.Invoke(ctx, AuctionNode_TryBid_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, AuctionNode_Bid_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *auctionNodeClient) TryResult(ctx context.Context, in *ResultRequest, opts ...grpc.CallOption) (*Outcome, error) {
+func (c *auctionNodeClient) Result(ctx context.Context, in *ResultRequest, opts ...grpc.CallOption) (*Outcome, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Outcome)
-	err := c.cc.Invoke(ctx, AuctionNode_TryResult_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, AuctionNode_Result_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -69,8 +69,8 @@ func (c *auctionNodeClient) TryResult(ctx context.Context, in *ResultRequest, op
 // Auction-node service. Clients may RPC-call bidding (TryBid),
 // as well as query the state of the auction (TryResult)
 type AuctionNodeServer interface {
-	TryBid(context.Context, *Bid) (*Acknowledgement, error)
-	TryResult(context.Context, *ResultRequest) (*Outcome, error)
+	Bid(context.Context, *ProposedBid) (*Acknowledgement, error)
+	Result(context.Context, *ResultRequest) (*Outcome, error)
 	mustEmbedUnimplementedAuctionNodeServer()
 }
 
@@ -81,11 +81,11 @@ type AuctionNodeServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAuctionNodeServer struct{}
 
-func (UnimplementedAuctionNodeServer) TryBid(context.Context, *Bid) (*Acknowledgement, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method TryBid not implemented")
+func (UnimplementedAuctionNodeServer) Bid(context.Context, *ProposedBid) (*Acknowledgement, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Bid not implemented")
 }
-func (UnimplementedAuctionNodeServer) TryResult(context.Context, *ResultRequest) (*Outcome, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method TryResult not implemented")
+func (UnimplementedAuctionNodeServer) Result(context.Context, *ResultRequest) (*Outcome, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Result not implemented")
 }
 func (UnimplementedAuctionNodeServer) mustEmbedUnimplementedAuctionNodeServer() {}
 func (UnimplementedAuctionNodeServer) testEmbeddedByValue()                     {}
@@ -108,38 +108,38 @@ func RegisterAuctionNodeServer(s grpc.ServiceRegistrar, srv AuctionNodeServer) {
 	s.RegisterService(&AuctionNode_ServiceDesc, srv)
 }
 
-func _AuctionNode_TryBid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Bid)
+func _AuctionNode_Bid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProposedBid)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuctionNodeServer).TryBid(ctx, in)
+		return srv.(AuctionNodeServer).Bid(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuctionNode_TryBid_FullMethodName,
+		FullMethod: AuctionNode_Bid_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuctionNodeServer).TryBid(ctx, req.(*Bid))
+		return srv.(AuctionNodeServer).Bid(ctx, req.(*ProposedBid))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuctionNode_TryResult_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AuctionNode_Result_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ResultRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuctionNodeServer).TryResult(ctx, in)
+		return srv.(AuctionNodeServer).Result(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuctionNode_TryResult_FullMethodName,
+		FullMethod: AuctionNode_Result_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuctionNodeServer).TryResult(ctx, req.(*ResultRequest))
+		return srv.(AuctionNodeServer).Result(ctx, req.(*ResultRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -152,12 +152,12 @@ var AuctionNode_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*AuctionNodeServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "TryBid",
-			Handler:    _AuctionNode_TryBid_Handler,
+			MethodName: "Bid",
+			Handler:    _AuctionNode_Bid_Handler,
 		},
 		{
-			MethodName: "TryResult",
-			Handler:    _AuctionNode_TryResult_Handler,
+			MethodName: "Result",
+			Handler:    _AuctionNode_Result_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

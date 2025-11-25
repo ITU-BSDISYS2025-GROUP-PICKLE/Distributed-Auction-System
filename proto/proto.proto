@@ -3,7 +3,7 @@ syntax = "proto3";
 option go_package = "Distributed-Auction-System/proto";
 
 // A bid to be placed by clients, sent to an auction-node
-message Bid {
+message ProposedBid {
     int32 bidding_client_id = 1;
     int32 bid_amount = 2;
 }
@@ -43,6 +43,6 @@ message ResultRequest {
 // Auction-node service. Clients may RPC-call bidding (TryBid),
 // as well as query the state of the auction (TryResult)
 service AuctionNode {
-    rpc TryBid(Bid) returns (Acknowledgement);
-    rpc TryResult(ResultRequest) returns (Outcome);
+    rpc Bid(ProposedBid) returns (Acknowledgement);
+    rpc Result(ResultRequest) returns (Outcome);
 }

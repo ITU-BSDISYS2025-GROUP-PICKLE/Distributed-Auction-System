@@ -71,7 +71,7 @@ func (Acknowledgement_AckType) EnumDescriptor() ([]byte, []int) {
 }
 
 // A bid to be placed by clients, sent to an auction-node
-type Bid struct {
+type ProposedBid struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	BiddingClientId int32                  `protobuf:"varint,1,opt,name=bidding_client_id,json=biddingClientId,proto3" json:"bidding_client_id,omitempty"`
 	BidAmount       int32                  `protobuf:"varint,2,opt,name=bid_amount,json=bidAmount,proto3" json:"bid_amount,omitempty"`
@@ -79,20 +79,20 @@ type Bid struct {
 	sizeCache       protoimpl.SizeCache
 }
 
-func (x *Bid) Reset() {
-	*x = Bid{}
+func (x *ProposedBid) Reset() {
+	*x = ProposedBid{}
 	mi := &file_proto_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *Bid) String() string {
+func (x *ProposedBid) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Bid) ProtoMessage() {}
+func (*ProposedBid) ProtoMessage() {}
 
-func (x *Bid) ProtoReflect() protoreflect.Message {
+func (x *ProposedBid) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -104,19 +104,19 @@ func (x *Bid) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Bid.ProtoReflect.Descriptor instead.
-func (*Bid) Descriptor() ([]byte, []int) {
+// Deprecated: Use ProposedBid.ProtoReflect.Descriptor instead.
+func (*ProposedBid) Descriptor() ([]byte, []int) {
 	return file_proto_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Bid) GetBiddingClientId() int32 {
+func (x *ProposedBid) GetBiddingClientId() int32 {
 	if x != nil {
 		return x.BiddingClientId
 	}
 	return 0
 }
 
-func (x *Bid) GetBidAmount() int32 {
+func (x *ProposedBid) GetBidAmount() int32 {
 	if x != nil {
 		return x.BidAmount
 	}
@@ -355,8 +355,8 @@ var File_proto_proto protoreflect.FileDescriptor
 
 const file_proto_proto_rawDesc = "" +
 	"\n" +
-	"\vproto.proto\"P\n" +
-	"\x03Bid\x12*\n" +
+	"\vproto.proto\"X\n" +
+	"\vProposedBid\x12*\n" +
 	"\x11bidding_client_id\x18\x01 \x01(\x05R\x0fbiddingClientId\x12\x1d\n" +
 	"\n" +
 	"bid_amount\x18\x02 \x01(\x05R\tbidAmount\"v\n" +
@@ -374,10 +374,10 @@ const file_proto_proto_rawDesc = "" +
 	"\x06result\x18\x02 \x01(\v2\a.ResultH\x00R\x06resultB\r\n" +
 	"\vOutcomeType\"A\n" +
 	"\rResultRequest\x120\n" +
-	"\x14requesting_client_id\x18\x01 \x01(\x05R\x12requestingClientId2V\n" +
-	"\vAuctionNode\x12 \n" +
-	"\x06TryBid\x12\x04.Bid\x1a\x10.Acknowledgement\x12%\n" +
-	"\tTryResult\x12\x0e.ResultRequest\x1a\b.OutcomeB\"Z Distributed-Auction-System/protob\x06proto3"
+	"\x14requesting_client_id\x18\x01 \x01(\x05R\x12requestingClientId2X\n" +
+	"\vAuctionNode\x12%\n" +
+	"\x03Bid\x12\f.ProposedBid\x1a\x10.Acknowledgement\x12\"\n" +
+	"\x06Result\x12\x0e.ResultRequest\x1a\b.OutcomeB\"Z Distributed-Auction-System/protob\x06proto3"
 
 var (
 	file_proto_proto_rawDescOnce sync.Once
@@ -395,7 +395,7 @@ var file_proto_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_proto_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_proto_proto_goTypes = []any{
 	(Acknowledgement_AckType)(0), // 0: Acknowledgement.AckType
-	(*Bid)(nil),                  // 1: Bid
+	(*ProposedBid)(nil),          // 1: ProposedBid
 	(*Acknowledgement)(nil),      // 2: Acknowledgement
 	(*Result)(nil),               // 3: Result
 	(*Outcome)(nil),              // 4: Outcome
@@ -404,10 +404,10 @@ var file_proto_proto_goTypes = []any{
 var file_proto_proto_depIdxs = []int32{
 	0, // 0: Acknowledgement.ackType:type_name -> Acknowledgement.AckType
 	3, // 1: Outcome.result:type_name -> Result
-	1, // 2: AuctionNode.TryBid:input_type -> Bid
-	5, // 3: AuctionNode.TryResult:input_type -> ResultRequest
-	2, // 4: AuctionNode.TryBid:output_type -> Acknowledgement
-	4, // 5: AuctionNode.TryResult:output_type -> Outcome
+	1, // 2: AuctionNode.Bid:input_type -> ProposedBid
+	5, // 3: AuctionNode.Result:input_type -> ResultRequest
+	2, // 4: AuctionNode.Bid:output_type -> Acknowledgement
+	4, // 5: AuctionNode.Result:output_type -> Outcome
 	4, // [4:6] is the sub-list for method output_type
 	2, // [2:4] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name

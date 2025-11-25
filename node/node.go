@@ -86,7 +86,7 @@ func (n *AuctionNode) RunAuction() {
 }
 
 // RPC function
-func (n *AuctionNode) TryBid(_ context.Context, proposed_bid *pb.Bid) (*pb.Acknowledgement, error) {
+func (n *AuctionNode) Bid(_ context.Context, proposed_bid *pb.ProposedBid) (*pb.Acknowledgement, error) {
 	n.mu.Lock()
 	defer n.mu.Unlock()
 
@@ -126,7 +126,7 @@ func (n *AuctionNode) TryBid(_ context.Context, proposed_bid *pb.Bid) (*pb.Ackno
 }
 
 // RPC function
-func (n *AuctionNode) TryResult(_ context.Context, result_request *pb.ResultRequest) (*pb.Outcome, error) {
+func (n *AuctionNode) Result(_ context.Context, result_request *pb.ResultRequest) (*pb.Outcome, error) {
 	n.mu.Lock()
 	defer n.mu.Unlock()
 
