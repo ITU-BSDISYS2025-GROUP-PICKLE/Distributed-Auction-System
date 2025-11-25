@@ -17,6 +17,7 @@ import (
 
 // Universal/shared variables
 var (
+	client_id  = -1
 	node_ports = []string{}
 )
 
@@ -77,8 +78,8 @@ func RemovePortFromSlice(port string) []string {
 	return node_ports
 }
 
-// Attempt placing a bid on all active nodes
-// TODO: Finish description
+// Attempt placing a bid on all active nodes. If a node is down, its port is
+// removed from the node-port slice and consequently won't be dialed again
 func PlaceBid(message string) {
 	// Split the bid message
 	bidSplit := strings.Split(message, " ")
@@ -99,7 +100,7 @@ func PlaceBid(message string) {
 
 	// Create bid object
 	bid := &pb.Bid{
-		BiddingClientId: 8008135, // TODO: Implement ClientId registration
+		BiddingClientId: int32(client_id),
 		BidAmount:       int32(amount),
 	}
 
@@ -142,15 +143,22 @@ func QueryResult() {
 }
 
 func main() {
-	if len(os.Args) < 2 {
-		// Even though we're really only looking for 1 (or more) arguments, we expect at least 2
+	if len(os.Args) < 3 {
+		// Even though we're really only looking for 2 (or more) arguments, we expect at least 3
 		// because the first (0th) argument always directs to the .exe of the .go file that's run
-		println("Usage: go run client.go <node_port_1> [<node_port_2> ...]")
+		println("Usage: go run client.go <client_id> <node_port_1> [<node_port_2> ...]")
 		return
 	}
 
+	// Parse client ID
+	tmp, err := strconv.Atoi(os.Args[1])
+	if err != nil {
+		println("Usage: go run client.go <client_id> <node_port_1> [<node_port_2> ...]")
+	}
+	client_id = tmp
+
 	// Parse node-port argument(s)
-	node_ports = os.Args[1:]
+	node_ports = os.Args[2:]
 
 	// Print usage
 	PrintUsage()
