@@ -25,6 +25,7 @@ type AuctionNode struct {
 	is_auction_live    bool
 	highest_bid_amount int32
 	highest_bidder_id  int32
+	bidders            []int32
 }
 
 // Start an AuctionNode server. Runs indefinitely
@@ -54,6 +55,7 @@ func (n *AuctionNode) StartServer() {
 // Start an auction. Runs for one minute, ends and announces the winner, waits for one more minute, then stops the server
 func (n *AuctionNode) RunAuction() {
 	// Cheesy way of synchronising auction-start across nodes: wait until the same second
+	log.Println("Auction starting within the minute...")
 	for time.Now().Second() != 0 {
 		time.Sleep(time.Second)
 	}
@@ -87,6 +89,18 @@ func (n *AuctionNode) RunAuction() {
 func (n *AuctionNode) TryBid(_ context.Context, proposed_bid *pb.Bid) (*pb.Acknowledgement, error) {
 	n.mu.Lock()
 	defer n.mu.Unlock()
+
+	// First call to bid registers the bidder (this won't be used for anything but is an assignment requirement)
+	should_append := true
+	for _, b := range n.bidders {
+		if b == proposed_bid.BiddingClientId {
+			should_append = false
+		}
+	}
+	if should_append {
+		n.bidders = append(n.bidders, proposed_bid.BiddingClientId)
+		log.Printf("Client #%d registered", proposed_bid.BiddingClientId)
+	}
 
 	announcement := fmt.Sprintf("Client #%d bids %d DKK", proposed_bid.BiddingClientId, proposed_bid.BidAmount)
 
