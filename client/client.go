@@ -114,7 +114,7 @@ func PlaceBid(message string) {
 		// Attempt to place the bid
 		ack, err := medium.TryBid(context.Background(), bid)
 		if err != nil {
-			// If an error is encountered, remove the node-port from the node-ports slice so it's never called again
+			// If an error is encountered, the node-port is removed from the node-ports slice so it's never called again
 			node_ports = RemovePortFromSlice(node_port)
 			if len(node_ports) == 0 {
 				log.Fatalln("place bid failed: all nodes are down")
@@ -131,15 +131,41 @@ func PlaceBid(message string) {
 		case pb.Acknowledgement_EXCEPTION:
 			log.Printf("localhost:%v --> Exception", node_port)
 		default:
-			log.Fatalf("This should never happen")
+			log.Fatalln("This should never happen")
 		}
 	}
 }
 
 // Attempt querying the state of the auction from one of the active nodes
 func QueryResult() {
-	// TODO: Implement
-	log.Println("GETTING RESULT...")
+	// Log for transparency
+	log.Println("Querying the state of the auction...")
+
+	// Query the state of the auction from all nodes
+	for _, node_port := range node_ports {
+
+		// Dial the Node
+		medium, conn := DialNode("localhost:" + node_port)
+		defer conn.Close()
+
+		outcome, err := medium.TryResult(context.Background(), &pb.Empty{})
+		if err != nil {
+			// If an error is encountered, the node-port is removed from the node-ports slice so it's never called again
+			node_ports = RemovePortFromSlice(node_port)
+			if len(node_ports) == 0 {
+				log.Fatalln("query result failed: all nodes are down")
+			}
+
+			continue
+		}
+
+		if outcome.GetResult() == nil {
+			log.Printf("localhost:%s --> Highest current bid: %d DKK", node_port, outcome.GetHighestBidSoFar())
+		} else {
+			result := outcome.GetResult()
+			log.Printf("localhost:%s --> Client #%d won the auction with a bid of %d DKK", node_port, result.HighestBidderId, result.HighestBidFinal)
+		}
+	}
 }
 
 func main() {
