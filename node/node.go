@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"os"
@@ -83,8 +84,11 @@ func (n *AuctionNode) TryBid(_ context.Context, proposed_bid *pb.Bid) (*pb.Ackno
 	n.mu.Lock()
 	defer n.mu.Unlock()
 
+	announcement := fmt.Sprintf("Client #%d bids %d DKK", proposed_bid.BiddingClientId, proposed_bid.BidAmount)
+
 	// If the auction isn't alive, return an 'Exception'-acknowledgement
 	if !n.is_auction_live {
+		log.Printf("%s: Returning an Exception-ack", announcement)
 		return &pb.Acknowledgement{AckType: pb.Acknowledgement_EXCEPTION}, nil
 	}
 
@@ -93,11 +97,13 @@ func (n *AuctionNode) TryBid(_ context.Context, proposed_bid *pb.Bid) (*pb.Ackno
 	if proposed_bid.BidAmount > n.highest_bid_amount {
 		n.highest_bid_amount = proposed_bid.BidAmount
 		n.highest_bidder_id = proposed_bid.BiddingClientId
+		log.Printf("%s: Returning a Success-ack", announcement)
 		return &pb.Acknowledgement{AckType: pb.Acknowledgement_SUCCESS}, nil
 	}
 
 	// If the auction is alive, but the proposed bid is lower than the current max,
 	// simply return a 'Fail'-acknowledgement
+	log.Printf("%s: Returning a Fail-ack", announcement)
 	return &pb.Acknowledgement{AckType: pb.Acknowledgement_FAIL}, nil
 }
 
